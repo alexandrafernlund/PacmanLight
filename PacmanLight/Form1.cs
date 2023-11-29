@@ -59,7 +59,8 @@ namespace PacmanLight
             {
                 yellowX = random.Next(panelArray.GetLength(0));
                 yellowY = random.Next(panelArray.GetLength(1));
-            } while (panelArray[yellowX, yellowY].BackColor != Color.Gray);
+            }
+            while (panelArray[yellowX, yellowY].BackColor != Color.Gray || panelArray[yellowX, yellowY].BackColor == Color.White);
 
             panelArray[yellowX, yellowY].BackColor = Color.Yellow;
         }
@@ -72,14 +73,14 @@ namespace PacmanLight
         private void AddWhiteBlock()
         {
             Random random = new Random();
-            int x = random.Next(panelArray.GetLength(0));
-            int y = random.Next(panelArray.GetLength(1));
+            int x, y;
 
             do
             {
                 x = random.Next(panelArray.GetLength(0));
                 y = random.Next(panelArray.GetLength(1));
-            } while (panelArray[x, y].BackColor != Color.Gray && panelArray[x, y].BackColor != Color.Yellow);
+            }
+            while (panelArray[x, y].BackColor != Color.Gray && panelArray[x, y].BackColor != Color.Yellow);
 
             if (panelArray[x, y].BackColor != Color.White && panelArray[x, y].BackColor != Color.Red && panelArray[x, y].BackColor != Color.Green)
             {

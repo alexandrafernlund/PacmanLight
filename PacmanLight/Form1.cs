@@ -21,15 +21,19 @@ namespace PacmanLight
         TableLayoutPanel tpanel = new TableLayoutPanel();
         Panel panel;
         Panel[,] panelArray = new Panel[15, 15];
-        Position oldPosition = new Position(0, 0); // starting point
+        Position oldPosition = new Position(0, 0);
         Position newPosition;
         Position enemyOld = new Position(14, 14);
         Position enemyNew;
+        System.Windows.Forms.Timer timer = new System.Windows.Forms.Timer();
+        bool gameOver = false;
         public Form1()
         {
             InitializeComponent();
+            timer.Interval = 5000;
+            timer.Tick += Timer_Tick;
+            timer.Start();
         }
-
         private void Form1_Load(object sender, EventArgs e)
         {
             for (int i = 0; i < panelArray.GetLength(0); i++)
@@ -38,7 +42,7 @@ namespace PacmanLight
                 {
                     panel = new Panel();
                     panel.Size = new Size(30, 30);
-                    if (i == 0 && j == 0) panel.BackColor = Color.Green; // starting point of green
+                    if (i == 0 && j == 0) panel.BackColor = Color.Green;
                     else panel.BackColor = Color.Gray;
                     tpanel.Controls.Add(panel, i, j);
                     panelArray[i, j] = panel;
@@ -47,7 +51,24 @@ namespace PacmanLight
             Controls.Add(tpanel);
             tpanel.Dock = DockStyle.Fill;
             panelArray[enemyOld.X, enemyOld.Y].BackColor = Color.Red;
-            WindowState = FormWindowState.Maximized; // fullscreen or use Size = new Size(this.Width * 2, this.Height * 2); or add numbers
+            Size = new Size(563, 596);
+        }
+
+        private void Timer_Tick(object sender, EventArgs e)
+        {
+            AddWhiteBlock();
+        }
+
+        private void AddWhiteBlock()
+        {
+            Random random = new Random();
+            int x = random.Next(panelArray.GetLength(0));
+            int y = random.Next(panelArray.GetLength(1));
+
+            if (panelArray[x, y].BackColor != Color.White && panelArray[x, y].BackColor != Color.Red && panelArray[x, y].BackColor != Color.Green)
+            {
+                panelArray[x, y].BackColor = Color.White;
+            }
         }
 
         private void Form1_KeyDown(object sender, KeyEventArgs e)
@@ -67,40 +88,51 @@ namespace PacmanLight
                     if (oldPosition.Y != 0)
                     {
                         newPosition.Y -= 1;
-                        break;
                     }
                     else return;
+                    break;
                 case Direction.South:
                     if (oldPosition.Y < panelArray.GetLength(1) - 1)
                     {
                         newPosition.Y += 1;
-                        break;
                     }
                     else return;
+                    break;
                 case Direction.West:
                     if (oldPosition.X != 0)
                     {
                         newPosition.X -= 1;
-                        break;
                     }
                     else return;
+                    break;
                 case Direction.East:
                     if (oldPosition.X < panelArray.GetLength(0) - 1)
                     {
                         newPosition.X += 1;
-                        break;
                     }
                     else return;
+                    break;
             }
-            panelArray[oldPosition.X, oldPosition.Y].BackColor = Color.Gray;
-            panelArray[newPosition.X, newPosition.Y].BackColor = Color.Green;
-            oldPosition = newPosition;
-            CheckGameOver();
-            if (oldPosition.X == enemyOld.X && oldPosition.Y == enemyOld.Y)
+
+            if (panelArray[newPosition.X, newPosition.Y].BackColor == Color.White)
             {
-                MessageBox.Show("Game Over! You collided with the enemy.");
+                MessageBox.Show("Game Over! You collided with a white block.");
+                gameOver = true;
+                ResetGame();
             }
-            while (!moveEnemy()) ; // if false loop again
+            else
+            {
+                panelArray[oldPosition.X, oldPosition.Y].BackColor = Color.Gray;
+                panelArray[newPosition.X, newPosition.Y].BackColor = Color.Green;
+                oldPosition = newPosition;
+
+                CheckGameOver();
+
+                if (!gameOver)
+                {
+                    while (!moveEnemy()) ;
+                }
+            }
         }
 
         private bool moveEnemy()
@@ -139,8 +171,8 @@ namespace PacmanLight
                     }
                     else return false;
             }
-            panelArray[enemyOld.X, enemyOld.Y].BackColor= Color.Gray;
-            panelArray[enemyNew.X, enemyNew.Y].BackColor= Color.Red;
+            panelArray[enemyOld.X, enemyOld.Y].BackColor = Color.Gray;
+            panelArray[enemyNew.X, enemyNew.Y].BackColor = Color.Red;
             enemyOld = enemyNew;
             CheckGameOver();
             return true;
@@ -151,7 +183,43 @@ namespace PacmanLight
             if (oldPosition.X == enemyOld.X && oldPosition.Y == enemyOld.Y)
             {
                 MessageBox.Show("Game Over! You collided with the enemy.");
+                gameOver = true;
+                ResetGame();
             }
         }
+
+        private void ResetGame()
+        {
+            panelArray[oldPosition.X, oldPosition.Y].BackColor = Color.Gray;
+
+            oldPosition = new Position(0, 0);
+            panelArray[oldPosition.X, oldPosition.Y].BackColor = Color.Green;
+
+            for (int i = 0; i < panelArray.GetLength(0); i++)
+            {
+                for (int j = 0; j < panelArray.GetLength(1); j++)
+                {
+                    if (i == 0 && j == 0)
+                    {
+                        panelArray[i, j].BackColor = Color.Green;
+                    }
+                    else
+                    {
+                        if (panelArray[i, j].BackColor == Color.White)
+                        {
+                            panelArray[i, j].BackColor = Color.Gray;
+                        }
+                        else if (panelArray[i, j].BackColor == Color.Red)
+                        {
+                            panelArray[i, j].BackColor = Color.Gray; 
+                            enemyOld = new Position(i, j);
+                        }
+                    }
+                }
+            }
+
+            gameOver = false;
+        }
+
     }
 }

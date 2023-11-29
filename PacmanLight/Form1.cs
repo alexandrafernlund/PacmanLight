@@ -80,17 +80,9 @@ namespace PacmanLight
                 x = random.Next(panelArray.GetLength(0));
                 y = random.Next(panelArray.GetLength(1));
             }
-            while (panelArray[x, y].BackColor != Color.Gray && panelArray[x, y].BackColor != Color.Yellow);
+            while (panelArray[x, y].BackColor != Color.Gray || (x == enemyOld.X && y == enemyOld.Y) || (x == enemyNew.X && y == enemyNew.Y) || (x == newPosition.X && y == newPosition.Y));
 
-            if (panelArray[x, y].BackColor == Color.Yellow)
-            {
-                return;
-            }
-
-            if (panelArray[x, y].BackColor != Color.White && panelArray[x, y].BackColor != Color.Red && panelArray[x, y].BackColor != Color.Green)
-            {
-                panelArray[x, y].BackColor = Color.White;
-            }
+            panelArray[x, y].BackColor = Color.White;
         }
 
         private void Form1_KeyDown(object sender, KeyEventArgs e)

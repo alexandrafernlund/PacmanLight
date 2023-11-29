@@ -30,7 +30,7 @@ namespace PacmanLight
         public Form1()
         {
             InitializeComponent();
-            timer.Interval = 300;
+            timer.Interval = 80;
             timer.Tick += Timer_Tick;
             timer.Start();
         }

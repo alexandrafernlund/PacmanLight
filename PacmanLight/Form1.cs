@@ -30,7 +30,7 @@ namespace PacmanLight
         public Form1()
         {
             InitializeComponent();
-            timer.Interval = 5000;
+            timer.Interval = 300;
             timer.Tick += Timer_Tick;
             timer.Start();
         }
@@ -52,6 +52,16 @@ namespace PacmanLight
             tpanel.Dock = DockStyle.Fill;
             panelArray[enemyOld.X, enemyOld.Y].BackColor = Color.Red;
             Size = new Size(563, 596);
+
+            Random random = new Random();
+            int yellowX, yellowY;
+            do
+            {
+                yellowX = random.Next(panelArray.GetLength(0));
+                yellowY = random.Next(panelArray.GetLength(1));
+            } while (panelArray[yellowX, yellowY].BackColor != Color.Gray);
+
+            panelArray[yellowX, yellowY].BackColor = Color.Yellow;
         }
 
         private void Timer_Tick(object sender, EventArgs e)
@@ -64,6 +74,12 @@ namespace PacmanLight
             Random random = new Random();
             int x = random.Next(panelArray.GetLength(0));
             int y = random.Next(panelArray.GetLength(1));
+
+            do
+            {
+                x = random.Next(panelArray.GetLength(0));
+                y = random.Next(panelArray.GetLength(1));
+            } while (panelArray[x, y].BackColor != Color.Gray && panelArray[x, y].BackColor != Color.Yellow);
 
             if (panelArray[x, y].BackColor != Color.White && panelArray[x, y].BackColor != Color.Red && panelArray[x, y].BackColor != Color.Green)
             {
@@ -112,6 +128,13 @@ namespace PacmanLight
                     }
                     else return;
                     break;
+            }
+
+            if (panelArray[newPosition.X, newPosition.Y].BackColor == Color.Yellow)
+            {
+                MessageBox.Show("Congratulations! You won the game by reaching the yellow block.", "Game Over", MessageBoxButtons.OK);
+                ResetGame();
+                return;
             }
 
             if (panelArray[newPosition.X, newPosition.Y].BackColor == Color.White)
@@ -188,6 +211,30 @@ namespace PacmanLight
             }
         }
 
+        private void ResetYellowBlock()
+        {
+            for (int i = 0; i < panelArray.GetLength(0); i++)
+            {
+                for (int j = 0; j < panelArray.GetLength(1); j++)
+                {
+                    if (panelArray[i, j].BackColor == Color.Yellow)
+                    {
+                        panelArray[i, j].BackColor = Color.Gray;
+                        break;
+                    }
+                }
+            }
+
+            Random random = new Random();
+            int yellowX, yellowY;
+            do
+            {
+                yellowX = random.Next(panelArray.GetLength(0));
+                yellowY = random.Next(panelArray.GetLength(1));
+            } while (panelArray[yellowX, yellowY].BackColor != Color.Gray);
+
+            panelArray[yellowX, yellowY].BackColor = Color.Yellow;
+        }
         private void ResetGame()
         {
             panelArray[oldPosition.X, oldPosition.Y].BackColor = Color.Gray;
@@ -211,13 +258,13 @@ namespace PacmanLight
                         }
                         else if (panelArray[i, j].BackColor == Color.Red)
                         {
-                            panelArray[i, j].BackColor = Color.Gray; 
+                            panelArray[i, j].BackColor = Color.Gray;
                             enemyOld = new Position(i, j);
                         }
                     }
                 }
             }
-
+            ResetYellowBlock();
             gameOver = false;
         }
 

@@ -30,7 +30,7 @@ namespace PacmanLight
         public Form1()
         {
             InitializeComponent();
-            timer.Interval = 80;
+            timer.Interval = 60;
             timer.Tick += Timer_Tick;
             timer.Start();
         }
@@ -81,6 +81,11 @@ namespace PacmanLight
                 y = random.Next(panelArray.GetLength(1));
             }
             while (panelArray[x, y].BackColor != Color.Gray && panelArray[x, y].BackColor != Color.Yellow);
+
+            if (panelArray[x, y].BackColor == Color.Yellow)
+            {
+                return;
+            }
 
             if (panelArray[x, y].BackColor != Color.White && panelArray[x, y].BackColor != Color.Red && panelArray[x, y].BackColor != Color.Green)
             {
